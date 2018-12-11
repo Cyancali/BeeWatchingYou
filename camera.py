@@ -1,10 +1,20 @@
 #!/usr/bin/python3
 
-from picamera import PiCamera
-from time import sleep
+import time
+import picamera
 
-camera = PiCamera()
+frames = 60
 
-camera.start_preview()
-sleep(10)
-camera.stop_preview()
+with picamera.PiCamera() as camera:
+    camera.resolution = (1024, 768)
+    camera.framerate = 30
+    camera.start_preview()
+    # Give the camera some warm-up time
+    time.sleep(2)
+    start = time.time()
+    camera.capture_sequence(['images/image%02d.jpg' % i for i in range(frames)], use_video_port=True)
+    finish = time.time()
+
+print('Captured %d frames at %.2ffps' % (
+    frames,
+    frames / (finish - start)))
